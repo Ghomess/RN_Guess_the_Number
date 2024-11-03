@@ -4,8 +4,8 @@ import { colors } from '../utils/colors';
 function OpponentsGuessItem({ index, guess }) {
   return (
     <View style={styles.container}>
-      <Text>#{index}</Text>
-      <Text>Opponent's Guess: {guess}</Text>
+      <Text style={styles.itemText}>#{index}</Text>
+      <Text style={styles.itemText}>Opponent's Guess: {guess}</Text>
     </View>
   );
 }
@@ -17,11 +17,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     justifyContent: 'space-between',
-    width: '90%',
-    marginTop: 20,
-    padding: 10,
-    borderRadius: 30,
-    borderWidth: 2,
-    backgroundColor: colors.primary,
+    width: '100%',
+    marginVertical: 8,
+    padding: 12,
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: colors.primary800,
+    backgroundColor: colors.accent500,
+    elevation: 4,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+  },
+  itemText: {
+    fontFamily: 'open-sans',
   },
 });

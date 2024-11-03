@@ -1,33 +1,31 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../utils/colors';
 import ButtonComponent from '../components/ButtonComponent';
+import TitleComponent from '../components/TitleComponent';
 
 function GameOverScreen({ navigation, route }) {
-  // const { number, index } = route.params;
-  const number = 1;
-  const index = 2;
+  const { userNumber, numberOfRounds } = route.params;
+
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>GAME OVER!</Text>
-      </View>
+      <TitleComponent>GAME OVER!</TitleComponent>
       <View style={styles.imageContainer}>
         <Image
-          source={require('../images/success.png')}
+          source={require('../assets/images/success.png')}
           style={styles.image}
           resizeMode='cover'
         />
       </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.text}>
-          Your phone needed <Text style={styles.result}>{index}</Text> rounds to
-          guess the number <Text style={styles.result}>{number}</Text>.
-        </Text>
-      </View>
-      <ButtonComponent
-        text={'Start New Game'}
-        onPress={() => navigation.navigate('StartGameScreen')}
-      />
+
+      <Text style={styles.text}>
+        Your phone needed <Text style={styles.result}>{numberOfRounds} </Text>
+        rounds to guess the number
+        <Text style={styles.result}> {userNumber}</Text>.
+      </Text>
+
+      <ButtonComponent onPress={() => navigation.navigate('StartGameScreen')}>
+        Start New Game
+      </ButtonComponent>
     </View>
   );
 }
@@ -37,7 +35,7 @@ export default GameOverScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
+    padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -55,31 +53,27 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   imageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '10%',
-    marginBottom: 40,
-    width: '80%',
-  },
-  image: {
     width: 400,
     height: 400,
-    borderWidth: 2,
-    borderColor: colors.black,
-    borderRadius: 500,
+    borderRadius: 200,
+    borderWidth: 3,
+    borderColor: colors.primary800,
+    overflow: 'hidden',
+    margin: 36,
   },
-  textContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '90%',
-    padding: 20,
+  image: {
+    width: '100%',
+    height: '100%',
   },
+
   text: {
-    fontSize: 25,
-    color: colors.black,
+    fontFamily: 'open-sans',
+    fontSize: 24,
     textAlign: 'center',
+    marginBottom: 24,
   },
   result: {
-    color: colors.secondary,
+    fontFamily: 'open-sans-bold',
+    color: colors.primary500,
   },
 });

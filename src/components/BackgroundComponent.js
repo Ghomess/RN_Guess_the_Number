@@ -1,18 +1,18 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { ImageBackground, SafeAreaView, StyleSheet } from 'react-native';
 import { colors } from '../utils/colors';
 
 function BackgroundComponent({ children }) {
   return (
     <LinearGradient
-      colors={[colors.primary, colors.secondary]}
+      colors={[colors.primary700, colors.accent500]}
       style={style.rootScreen}>
       <ImageBackground
-        source={require('../images/background.png')}
+        source={require('../assets/images/background.png')}
         resizeMode='cover'
         style={style.rootScreen}
         imageStyle={style.backgroundImage}>
-        {children}
+        <SafeAreaView style={style.rootScreen}>{children}</SafeAreaView>
       </ImageBackground>
     </LinearGradient>
   );

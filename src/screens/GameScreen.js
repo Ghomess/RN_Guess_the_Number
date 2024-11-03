@@ -1,93 +1,123 @@
 import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import ButtonComponent from '../components/ButtonComponent';
 import { colors } from '../utils/colors';
 import OpponentsGuessItem from '../components/OpponentsGuessItem';
+import TitleComponent from '../components/TitleComponent';
+import NumberContainer from '../components/NumberContainer';
+import CardComponent from '../components/CardComponent';
+import InstructionText from '../components/InstructionText';
 
+function generateRandomNumberBetween(min, max, exclude) {
+  const rndNum = Math.floor(Math.random() * (max - min)) + min;
+
+  if (rndNum === exclude) {
+    return generateRandomNumberBetween(min, max, exclude);
+  } else {
+    return rndNum;
+  }
+}
+let minBoundary = 1;
+let maxBoundary = 100;
 function GameScreen({ route, navigation }) {
-  const [number, setNumber] = useState(Math.floor(Math.random() * 10 ** 2));
+  const initialGuess = generateRandomNumberBetween(1, 100, route.params.number);
+  const [currentGuess, setCurrentGuess] = useState(initialGuess);
 
   const [guesses, setGuesses] = useState([
     {
       id: 1,
-      number: number,
+      number: currentGuess,
     },
   ]);
 
-  let winningNumber = route.params.number;
+  let userNumber = parseInt(route.params.number);
 
-  console.log('Number: ' + number, 'Winning Number: ' + winningNumber);
   const checkWinningNumber = () => {
-    if (number === winningNumber) {
-      navigation.navigate('GameOverScreen');
+    if (currentGuess === userNumber) {
+      navigation.navigate('GameOverScreen', {
+        userNumber: userNumber,
+        numberOfRounds: guesses.length,
+      });
     }
   };
 
   useEffect(() => {
-    checkWinningNumber(number);
-  });
+    checkWinningNumber();
+  }, [currentGuess, userNumber, navigation]);
 
-  const handleLower = () => {
-    if (number > winningNumber) {
-      let newNumber;
-      do {
-        newNumber = Math.floor(Math.random() * (number - 1) + 1);
-      } while (guesses.some((guess) => guess.number === newNumber));
+  const nextGuessHandler = (direction) => {
+    // direction => 'lower' or 'higher'
 
-      setNumber(newNumber);
-      setGuesses([
-        ...guesses,
-        { index: guesses.length + 1, number: newNumber },
+    if (
+      (direction === 'lower' && currentGuess < userNumber) ||
+      (direction === 'greater' && currentGuess > userNumber)
+    ) {
+      Alert.alert('Dont lie!', 'You know that this is wrong...', [
+        { text: 'Sorry!', style: 'cancel' },
       ]);
-    } else {
-      alert('Too higher, try again');
+      return;
     }
-  };
-
-  const handleHigher = () => {
-    if (number < winningNumber) {
-      setNumber(
-        Math.floor(
-          Math.random() * (10 ** guesses.length - guesses) + guesses + 1,
-        ),
-      );
-      setGuesses(...guesses, { index: guesses.length + 1, number: number });
+    if (direction === 'lower') {
+      maxBoundary = currentGuess;
     } else {
-      alert('Too High, try again');
+      minBoundary = currentGuess + 1;
     }
+    const newRndNumber = generateRandomNumberBetween(
+      minBoundary,
+      maxBoundary,
+      currentGuess,
+    );
+    setCurrentGuess(newRndNumber);
+    setGuesses((prevGuesses) => [
+      ...prevGuesses,
+      {
+        number: newRndNumber,
+        id: prevGuesses.length + 1,
+      },
+    ]);
   };
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Opponent's Guess</Text>
-      </View>
-      <View style={styles.numberContainer}>
-        <Text style={styles.number}>{number}</Text>
-      </View>
-      <View style={styles.purpleContainer}>
-        <View style={styles.title2Container}>
-          <Text style={styles.title2}>Higher or Lower?</Text>
+      <TitleComponent>Opponent's Guess</TitleComponent>
+
+      <NumberContainer>{currentGuess}</NumberContainer>
+      <CardComponent>
+        <InstructionText style={styles.instructionText}>
+          Higher or lower ?
+        </InstructionText>
+        <View style={styles.buttonsContainer}>
+          <View style={styles.buttonContainer}>
+            <ButtonComponent onPress={() => nextGuessHandler('lower')}>
+              <Ionicons
+                name='remove'
+                size={24}
+                color='white'
+              />
+            </ButtonComponent>
+          </View>
+          <View style={styles.buttonContainer}>
+            <ButtonComponent onPress={() => nextGuessHandler('greater')}>
+              <Ionicons
+                name='add'
+                size={24}
+                color='white'
+              />
+            </ButtonComponent>
+          </View>
         </View>
-        <View style={styles.buttonContainer}>
-          <ButtonComponent
-            onPress={handleLower}
-            text={'-'}
-          />
-          <ButtonComponent
-            onPress={handleHigher}
-            text={'+'}
-          />
-        </View>
+      </CardComponent>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={guesses}
+          renderItem={({ item, index }) => (
+            <OpponentsGuessItem
+              index={index + 1}
+              guess={item.number}
+            />
+          )}
+        />
       </View>
-      <FlatList
-        data={guesses}
-        renderItem={({ item, index }) => (
-          <OpponentsGuessItem
-            index={index + 1}
-            guess={item.number}
-          />
-        )}
-      />
     </View>
   );
 }
@@ -97,48 +127,18 @@ export default GameScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
-    alignItems: 'center',
-  },
-  titleContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '20%',
-    marginBottom: 40,
-    paddingVertical: 10,
-    width: '90%',
-    borderWidth: 2,
-    borderColor: colors.white,
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  numberContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '80%',
-    padding: 20,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    marginBottom: 40,
-    borderRadius: 5,
-  },
-  number: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: colors.primary,
+    padding: 24,
   },
 
+  instructionText: {
+    marginBottom: 12,
+  },
   purpleContainer: {
     backgroundColor: colors.secondary,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    width: '80%',
   },
   title2Container: {
     alignItems: 'center',
@@ -148,12 +148,18 @@ const styles = StyleSheet.create({
   },
   title2: {
     fontSize: 25,
-    color: colors.primary,
+    color: colors.accent500,
   },
-  buttonContainer: {
+  buttonsContainer: {
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    width: '100%',
     flexDirection: 'row',
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 16,
   },
 });

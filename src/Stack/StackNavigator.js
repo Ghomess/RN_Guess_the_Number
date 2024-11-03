@@ -17,23 +17,29 @@ function StackNavigator() {
         headerShown: false,
       }}>
       <Stack.Screen name='StartGameScreen'>
-        {() => (
+        {({ navigation }) => (
           <BackgroundComponent>
-            <StartGameScreen />
+            <StartGameScreen navigation={navigation} />
           </BackgroundComponent>
         )}
       </Stack.Screen>
       <Stack.Screen name='GameScreen'>
-        {() => (
+        {({ navigation, route }) => (
           <BackgroundComponent>
-            <GameScreen />
+            <GameScreen
+              navigation={navigation}
+              route={route}
+            />
           </BackgroundComponent>
         )}
       </Stack.Screen>
       <Stack.Screen name='GameOverScreen'>
-        {() => (
+        {({ navigation, route }) => (
           <BackgroundComponent>
-            <GameOverScreen />
+            <GameOverScreen
+              navigation={navigation}
+              route={route}
+            />
           </BackgroundComponent>
         )}
       </Stack.Screen>

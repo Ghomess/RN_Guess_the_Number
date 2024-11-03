@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, Alert } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
 import ButtonComponent from '../components/ButtonComponent';
 import TextInputComponent from '../components/TextInputComponent';
 import { colors } from '../utils/colors';
+import CardComponent from '../components/CardComponent';
+import InstructionText from '../components/InstructionText';
+import TitleComponent from '../components/TitleComponent';
 
 function StartGameScreen({ navigation }) {
   const [number, setNumber] = useState('');
@@ -24,36 +27,30 @@ function StartGameScreen({ navigation }) {
           ],
         )
       : navigation.navigate('GameScreen', { number });
+
+    handleReset();
   };
   const handleReset = () => {
     setNumber('');
   };
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Guess the Number</Text>
-      </View>
-      <View style={styles.purpleContainer}>
-        <Text style={styles.text}>Enter a Number</Text>
+      <TitleComponent>Guess the Number</TitleComponent>
+      <CardComponent>
+        <InstructionText>Enter a Number</InstructionText>
         <TextInputComponent
           value={number}
           onChangeText={setNumber}
         />
         <View style={styles.buttonsContainer}>
           <View style={styles.buttonContainer}>
-            <ButtonComponent
-              onPress={handleReset}
-              text={'Reset'}
-            />
+            <ButtonComponent onPress={handleReset}>Reset</ButtonComponent>
           </View>
           <View style={styles.buttonContainer}>
-            <ButtonComponent
-              onPress={handleConfirm}
-              text={'Confirm'}
-            />
+            <ButtonComponent onPress={handleConfirm}>Confirm</ButtonComponent>
           </View>
         </View>
-      </View>
+      </CardComponent>
     </View>
   );
 }
@@ -84,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 24,
     padding: 16,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.primary800,
     borderRadius: 8,
     elevation: 4,
     //ios elevation
@@ -93,10 +90,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 6,
     shadowOpacity: 0.25,
   },
+  instructionText: {
+    color: colors.accent500,
+    fontSize: 24,
+  },
   text: {
     marginTop: 10,
     fontSize: 20,
-    color: colors.primary,
+    color: colors.accent500,
   },
   buttonsContainer: {
     flexDirection: 'row',
